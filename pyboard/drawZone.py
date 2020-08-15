@@ -916,6 +916,7 @@ class DrawZone(wx.Control):
     tmp=self._bmpDrawUndo
     self._bmpDrawUndo=self._bmpDrawCache
     self._bmpDrawCache=tmp
+    self._slides._bmpDraw=tmp
     self.DoPaint()
     if self._imodo== MODO_TEXTO:
       #Para redibujar
