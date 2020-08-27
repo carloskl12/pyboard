@@ -37,4 +37,6 @@ CHAR_EQ={
 'omega':'ω',
 'integra':'∫',
 'partial':'∂',
+'suma':'∑',
+'infty':'∞',
 }
