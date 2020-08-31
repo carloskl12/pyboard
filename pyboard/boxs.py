@@ -457,28 +457,29 @@ class SqrtBox(Box):
       #print('  *****se ejecuto:', box.x)
     #Separación del siguiente box
     self.width=box.x+box.width+self._interlineado
-    self.height=box.height
+    
     box._printBoxMetrics(head=True)
     hx=fmetrics.averageWidth
-    h=box.height
+    h=box.height+self._interlineado
     p1y=box._ascent-round(hx/2)
     p1x=0
     p2y=h
     p2x=round(hx/2)
-    p3y=0
+    p3y=self._interlineado
     p3x=hx
     p4y=p3y
     p4x=self.width-self._interlineado
     #Calcula el trazo para la raiz
     self._points=[(p1x,p1y),(p2x,p2y),(p3x,p3y),(p4x,p4y)]
     
-    self._ascent=box._ascent #Altura sobre la linea base
+    #Para el _ascent
+    self._ascent=box._ascent +self._interlineado#Altura sobre la linea base
     self._descent=box._descent #altura bajo la linea base
     self._averageWidth=box._averageWidth #altura de una x
     
     self._internalLeading=fmetrics.internalLeading # espacio extra superior
     self._externalLeading=fmetrics.externalLeading # espacio entre lineas
-
+    self.height=self._ascent+self._descent
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def DrawBox(self, dc):
     '''
@@ -496,10 +497,13 @@ class SqrtBox(Box):
       p2=px2+gx,py2+gy
       dc.DrawLine(p1,p2)
     box=self.d[0]
+    
     if len(self.d)==2:
       indice=self.d[0]
       indice.DrawBox(dc)
       box=self.d[1]
+    # posiciona corrigiendo el ascent extra de la raíz
+    box.y=self._ascent-box._ascent
     box.DrawBox(dc)
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def DepureTree(self):
@@ -760,12 +764,18 @@ class FracBox(Box):
     self._barra='_'*nrayas
     fmetrics= dc.GetFontMetrics()
     self._xbarra= 0
-    self._ybarra= self.d[0]._ascent - fmetrics.ascent+ round(1.5*self._interlineado)
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # Coordenada y con referencia 0 como el nivel ascent
+    # pues es la posición normal de la raya, 
+    self._ybarra= self.d[0]._descent
+    # Ajuste si las cajas no son de solo texto fuente
+    # por ejemplo para el caso de potencias
+    self._ybarra+=self._ascent-fmetrics.ascent
     wtext,htext=dc.GetTextExtent(self._barra)
     #Calcula el ancho de la caja mas un externalLeading a lado y lado
     
     self.width=wtext+2*self._interlineado
-    print('  interlineado',self._interlineado)
+    #print('  interlineado',self._interlineado)
     #posiciona numerador
     self.d[0].x= round((wtext-self.d[0].width)/2)
     
@@ -1013,9 +1023,10 @@ class PowBox(InfixBox):
     if ha > self.d[1]._ascent:
       self.d[1].y=ha-self.d[1]._ascent
     elif ha < self.d[1]._ascent:
+      print('***** _ascent previo:',self._ascent)
       self.d[0].y=self.d[1]._ascent-ha
       self._ascent+=self.d[0].y
-      #print('')
+      print('***** si se agrega:',self._ascent)
     self.height=self._ascent+self._descent
     #print('  p1 x,y:',self.d[0].pos, '  p2 x,y:', self.d[1].pos,'\n')
     
