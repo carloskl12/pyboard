@@ -615,6 +615,15 @@ class DrawZone(wx.Control):
     elif keyCode == ord('v'):
       self.drawColour='#00ff00'
       self.Msg('color verde (v)')
+    elif keyCode == ord('y'):
+      self.drawColour='#ffff00'
+      self.Msg('color amarillo (y)')
+    elif keyCode == ord('m'):
+      self.drawColour='#ff00ff'
+      self.Msg('color magenta (m)')
+    elif keyCode == ord('x'):
+      self.drawColour='#00ffff'
+      self.Msg('color cian (x)')
     # Si ha cambiado la herramienta se guarda la figura
     # en la capa de dibujo
     if lastTool != self._toolDraw:

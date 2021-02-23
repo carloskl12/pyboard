@@ -65,6 +65,8 @@ En este modo, es posible ajustar el color de los trazos:
   * rojo (r)
   * verde (v)
   * azul (z)
+  * amarillo (y)
+  * cian (x)
   
 Existen acciones particulares en este modo:
   * anterior (a): disminuye el ancho del trazo
