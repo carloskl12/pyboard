@@ -4,6 +4,7 @@ import math
 from .formulaCtrl import FormulaCtrl
 from .utils import getFileList, Slides
 from .figure import Figure
+from .lineCMD import LineCMD
 MODO_COMANDO=0
 MODO_TEXTO=1
 MODO_FORMULA=2
@@ -82,7 +83,7 @@ class DrawZone(wx.Control):
     self.sb= wx.Control(self,size=(ancho,self.sbHeight),
       pos=wx.Point(0,alto-self.sbHeight),style=wx.BORDER_NONE)
     self._sbtxModo=wx.StaticText(self.sb, label='Modo: %s'%self.modo, pos=(10,2))
-    self._sbtxCmd=wx.StaticText(self.sb, label='| >> ', pos=(160,2))
+    self._sbtxCmd=LineCMD(self.sb, layout='| >> ', pos=(160,2), width=390)
     self._sbtxInfo=wx.StaticText(self.sb, label='| Msg: ', pos=(560,2))
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -670,7 +671,7 @@ class DrawZone(wx.Control):
     else:
       self._sbtxInfo.SetLabel('')
   def Cmd(self, s=''): 
-    self._sbtxCmd.SetLabel('| >> %s'%s )
+    self._sbtxCmd.SetLabel(s)
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def OnSize(self,e):
     ancho, alto= self.GetSize()
