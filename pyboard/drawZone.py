@@ -69,11 +69,13 @@ class DrawZone(wx.Control):
     self._slides=None #lista de los slides o diapositivas
     self._lastClickLeft=(0,0) #Ultima posición del clic izquierdo
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    # buffer para el texto ingresado
-    self._txbuff=''
+    # Ingreso de texto 
+    self._txbuff='' #Buffer
     self._txtSize=14
     self._drawTxt=wx.StaticText(self,label='',pos=(0,0))
     self._drawTxt.SetFont(wx.Font( wx.FontInfo(self._txtSize).Family(wx.FONTFAMILY_SWISS) ))
+    self._txtHistorial=[] # historial de texto
+    self._indexHistorial=0 #Indice para el historial
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     # Barra de estado
     self.sbHeight=24
@@ -127,6 +129,7 @@ class DrawZone(wx.Control):
     self._drawColour=c
     self.formula.fcolour=c
     self._drawTxt.SetForegroundColour(c)
+
   def SetFont(self, font):
     '''
     Ajusta la fuente de la zona de dibujo, esta es diferente a la de la 
@@ -486,6 +489,7 @@ class DrawZone(wx.Control):
     Entrada de texto en modo texto
     '''
     if keyCode==27:
+      # Escape
       self.SetMode(0)
       self.DropFormula()
       self._txbuff=''
@@ -494,8 +498,13 @@ class DrawZone(wx.Control):
       #self.Unbind(wx.EVT_MOTION)
       return
     if unicodeKey == 13:
+      #Nueva linea
       self.DropFormula()
       w,h=self.formula.textSize
+      # Agrega al historial
+      if self._txbuff!='':
+        self._txtHistorial.append(self._txbuff)
+      self._indexHistorial=0
       self._txbuff=''
       self.formula('')
       
@@ -503,7 +512,26 @@ class DrawZone(wx.Control):
       self.formula.SetPosition( (x,y+h))
       #self.DoPaint()
     elif unicodeKey == 8:
+      #Borrar un caracter
       self._txbuff=self._txbuff[:-1]
+    elif keyCode in (315,317):
+      #314,315,316,317 Izquierda, arriba, derecha, abajo
+      self.Msg("historial - %i"%((-1)*self._indexHistorial))
+      if keyCode == 315: # arriba
+        # sube en el historial
+        self._indexHistorial-=1
+      elif keyCode == 317: #abajo
+        self._indexHistorial+=1
+      
+      if self._indexHistorial > 0:
+        self._txbuff=''
+        self._indexHistorial=0
+      else:
+        try:
+          self._txbuff = self._txtHistorial[self._indexHistorial]
+        except:
+          self._txbuff=''
+          self._indexHistorial=0
     elif unicodeKey>31:
       self._txbuff+=chr(unicodeKey)
     
