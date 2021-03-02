@@ -212,7 +212,7 @@ class DrawZone(wx.Control):
       raise Exception('Modo no válido: %s'%str(modo))
     if imodo != self._imodo:
       self._txbuff=''
-      self.Cmd()
+      self._sbtxCmd.SetLabel('')
       
       if self._imodo == MODO_DIBUJO:
         tool=self._tools[self._toolDraw]
@@ -481,65 +481,40 @@ class DrawZone(wx.Control):
       self._txbuff+=chr(unicodeKey)
     
     self._drawTxt.SetLabel(self._txbuff)
-    self.Cmd(self._txbuff)
+    self._sbtxCmd.SetLabel(self._txbuff)
     self.Msg('keyCode - %i'%keyCode)
 
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def ModeFormula(self, keyCode, unicodeKey):
-    '''
-    Entrada de texto en modo texto
-    '''
-    if keyCode==27:
+    """
+    Entrada de los comandos para crear fórmulas
+    """
+    if keyCode == 27:
       # Escape
       self.SetMode(0)
       self.DropFormula()
-      self._txbuff=''
+      #self._txbuff=''
+      self._sbtxCmd.KeyInput(0,13)
       self.formula('')
       self.DoPaint()
-      #self.Unbind(wx.EVT_MOTION)
       return
     if unicodeKey == 13:
       #Nueva linea
       self.DropFormula()
       w,h=self.formula.textSize
-      # Agrega al historial
-      if self._txbuff!='':
-        self._txtHistorial.append(self._txbuff)
-      self._indexHistorial=0
-      self._txbuff=''
+      self._sbtxCmd.KeyInput(0,13)
       self.formula('')
-      
       x,y= self.formula.GetPosition()
       self.formula.SetPosition( (x,y+h))
-      #self.DoPaint()
-    elif unicodeKey == 8:
-      #Borrar un caracter
-      self._txbuff=self._txbuff[:-1]
-    elif keyCode in (315,317):
-      #314,315,316,317 Izquierda, arriba, derecha, abajo
-      self.Msg("historial - %i"%((-1)*self._indexHistorial))
-      if keyCode == 315: # arriba
-        # sube en el historial
-        self._indexHistorial-=1
-      elif keyCode == 317: #abajo
-        self._indexHistorial+=1
-      
-      if self._indexHistorial > 0:
-        self._txbuff=''
-        self._indexHistorial=0
-      else:
-        try:
-          self._txbuff = self._txtHistorial[self._indexHistorial]
-        except:
-          self._txbuff=''
-          self._indexHistorial=0
-    elif unicodeKey>31:
-      self._txbuff+=chr(unicodeKey)
+    else:
+      self._sbtxCmd.KeyInput(keyCode, unicodeKey)
+      print("  unicodeKey:",unicodeKey)
     
-    self.formula(self._txbuff)
-    self.Cmd(self._txbuff)
+    self.Msg("historial - %i"%((-1)*self._sbtxCmd.historialIndex))
+    self.formula(self._sbtxCmd.label)
     self.DoPaint()
-    #self.Msg('keyCode - %i'%keyCode)
+
+
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def ModeDraw(self, keyCode, unicodeKey):
     '''
@@ -653,6 +628,18 @@ class DrawZone(wx.Control):
     elif keyCode == ord('x'):
       self.drawColour='#00ffff'
       self.Msg('color cian (x)')
+    elif keyCode == ord('k'):
+      self.drawColour='#a85eff'
+      self.Msg('color morado (k)')
+    elif keyCode == ord('o'):
+      self.drawColour='#f57900'
+      self.Msg('color naranja (o)')
+    elif keyCode == ord('i'):
+      self.drawColour='#ffa4a4'
+      self.Msg('color rosa (i)')
+    elif keyCode == ord('u'):
+      self.drawColour='#babdb6'
+      self.Msg('color gris (u)')
     # Si ha cambiado la herramienta se guarda la figura
     # en la capa de dibujo
     if lastTool != self._toolDraw:
@@ -666,11 +653,10 @@ class DrawZone(wx.Control):
     
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def Msg(self, s):
-    if len( self._sbtxCmd.GetLabel())<55:
-      self._sbtxInfo.SetLabel('| Msg: '+s)
-    else:
-      self._sbtxInfo.SetLabel('')
-  def Cmd(self, s=''): 
+    self._sbtxInfo.SetLabel('| Msg: '+s)
+
+  def Cmdx(self, s=''): 
+    
     self._sbtxCmd.SetLabel(s)
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def OnSize(self,e):

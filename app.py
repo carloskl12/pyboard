@@ -51,8 +51,10 @@ class MainFrame(wx.Frame):
   def OnExit(self,e):
     self.p.Save()
     print('**Cerrado correctamente')
-    self.Destroy()
-
+    try:
+        self.Destroy()
+    except:
+        print("fin")
 
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def Msg(self,texto):
