@@ -5,6 +5,10 @@ __pycache__/
 *.pyc
 #Ficheros temporales
 *~
+run.sh
 /extras/
 /resource/chalkboard/
+/resource/slides/
 
+# Si hace seguimiento
+!/resource/slides/help/*

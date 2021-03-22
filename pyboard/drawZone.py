@@ -5,6 +5,9 @@ from .formulaCtrl import FormulaCtrl
 from .utils import getFileList, Slides
 from .figure import Figure
 from .lineCMD import LineCMD
+
+from .threadSocket import ThreadSocket
+
 MODO_COMANDO=0
 MODO_TEXTO=1
 MODO_FORMULA=2
@@ -119,6 +122,9 @@ class DrawZone(wx.Control):
     
     self.Bind(wx.EVT_RIGHT_UP, self.OnRighClic)
     
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # Crea el socket en donde escuchará
+    self.threadSocket= None
     #self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
 
 
@@ -138,6 +144,24 @@ class DrawZone(wx.Control):
     '''
     pass
 
+  def cbkfunctionSocket(self, cmd):
+    """
+    Función llamada para ejecutarse con el comando recibido a través de una
+    conexión con socket.
+    """
+    if ':' in cmd:
+        print('protocolo... ', cmd)
+    elif self._imodo == MODO_FORMULA:
+      
+      if cmd.lower() == "nueva linea":
+        # prueba
+        #self.ModeFormula(33,33)
+        self.DropFormula(newLine=True)
+
+      else:
+        self._sbtxCmd.SetLabel(cmd)
+        self.formula(self._sbtxCmd.label)
+        self.DoPaint()
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def SetStyle(self, style=1):
     '''
@@ -237,12 +261,12 @@ class DrawZone(wx.Control):
     if self._imodo != MODO_COMANDO:
       if keyCode==9: #Tabulador:
         if self._imodo == MODO_FORMULA:
+          self.DropFormula()
           self.SetMode('d')
           self.Bind(wx.EVT_MOTION, self.OnDrawing)
           self._isDrawing=False
-          self.DropFormula()
-          self._txbuff=''
-          self.formula('')
+          
+          print("tabulador")
           self.Msg(self._tools[self._toolDraw])
         elif self._imodo == MODO_DIBUJO:
           self.Unbind(wx.EVT_MOTION)
@@ -310,6 +334,15 @@ class DrawZone(wx.Control):
       if self._slidesOn:
         self._slides.Instert()
         self.DoPaint()
+    elif keyCode == ord('L'):
+      if self.threadSocket == None:
+        self.threadSocket=  ThreadSocket(1,"socketCMD_pyboard",cbkfunction =self.cbkfunctionSocket)
+        self.Msg("Escuchando en el puerto %i."%self.threadSocket.port)
+        self.threadSocket.start()
+        #self.threadSocket.run()
+      else:
+        self.threadSocket.parar()
+        self.threadSocket = None
     elif keyCode == ord('1'):
       self.SetStyle(1)
       self.DoPaint()
@@ -494,18 +527,18 @@ class DrawZone(wx.Control):
       self.SetMode(0)
       self.DropFormula()
       #self._txbuff=''
-      self._sbtxCmd.KeyInput(0,13)
-      self.formula('')
+      #self._sbtxCmd.KeyInput(0,13)
+      #self.formula('')
       self.DoPaint()
       return
     if unicodeKey == 13:
       #Nueva linea
-      self.DropFormula()
-      w,h=self.formula.textSize
-      self._sbtxCmd.KeyInput(0,13)
-      self.formula('')
-      x,y= self.formula.GetPosition()
-      self.formula.SetPosition( (x,y+h))
+      self.DropFormula(newLine=True)
+#      w,h=self.formula.textSize
+#      self._sbtxCmd.KeyInput(0,13)
+#      self.formula('')
+#      x,y= self.formula.GetPosition()
+#      self.formula.SetPosition( (x,y+h))
     else:
       self._sbtxCmd.KeyInput(keyCode, unicodeKey)
       print("  unicodeKey:",unicodeKey)
@@ -808,9 +841,14 @@ class DrawZone(wx.Control):
     self._txbuff=''
     self._drawTxt.SetLabel('')
   
-  def DropFormula(self):
+  def DropFormula(self, newLine=False):
     '''
     Se pasa la formula al area de dibujo
+    Se agrega el comando dado al historial de fórmulas
+    indicando un enter en la barra de comandos
+    
+    newLine: indica si esta función ocurrió por 
+    ingresar una nueva linea
     '''
     dc = wx.MemoryDC()
     self.SaveLastAction(dc)
@@ -818,6 +856,16 @@ class DrawZone(wx.Control):
     x,y=self.formula.GetPosition()
     #self.formula.SetMask(wx.Mask(self.formula, wx.BLACK))
     dc.DrawBitmap(self.formula.bitmap,x,y,1)
+    
+    
+    self._sbtxCmd.KeyInput(0,13)
+    w,h=self.formula.textSize
+    self.formula('')
+    if newLine:
+      
+      x,y= self.formula.GetPosition()
+      self.formula.SetPosition( (x,y+h))
+    
 
   def DropFigure(self,duplicate=False):
     if self._figure == None:

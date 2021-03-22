@@ -67,6 +67,7 @@ class LineCMD(object):
         if unicodeKey == 13:# Intro
             if self._label != '':
                 self._hist.append(self._label)
+                print(" *cmd guardado:",self._label)
             self._ih = 0
             self._ic = 0
             self._label = ''
