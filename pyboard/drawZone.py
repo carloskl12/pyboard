@@ -521,21 +521,13 @@ class DrawZone(wx.Control):
     """
     if keyCode == 27:
       # Escape
-      self.SetMode(0)
       self.DropFormula()
-      #self._txbuff=''
-      #self._sbtxCmd.KeyInput(0,13)
-      #self.formula('')
+      self.SetMode(0)
       self.DoPaint()
       return
     if unicodeKey == 13:
       #Nueva linea
       self.DropFormula(newLine=True)
-#      w,h=self.formula.textSize
-#      self._sbtxCmd.KeyInput(0,13)
-#      self.formula('')
-#      x,y= self.formula.GetPosition()
-#      self.formula.SetPosition( (x,y+h))
     else:
       self._sbtxCmd.KeyInput(keyCode, unicodeKey)
       print("  unicodeKey:",unicodeKey)
