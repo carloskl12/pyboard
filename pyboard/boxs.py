@@ -169,10 +169,29 @@ class Box(object):
         elif self.currentBox.parent.d[-1] != self.currentBox:
           self.currentBox.parent.d.append(self.currentBox)
 
-    if len(self.d)==0:
-      return
     if fontNormalSize !=None:
       self.fontNormalSize=fontNormalSize
+
+    if len(self.d)==0:
+      # Define unos valores por defecto para que se utilicen cuando
+      # la expresión no se ha terminado por completo de escribir
+      # sin generar un error
+      font, fsize= self.GetFont()
+      dc.SetFont(font)
+      fmetrics= dc.GetFontMetrics()
+      #v=[fmetrics.ascent, fmetrics.descent, fmetrics.height, fmetrics.averageWidth]
+      wtext,htext=dc.GetTextExtent(" ")
+      #Separación del siguiente box
+      self.width=wtext+round(fsize//8)
+      self.height=htext
+      self._ascent=fmetrics.ascent #Altura sobre la linea base
+      self._descent=fmetrics.descent #altura bajo la linea base
+      self._averageWidth=fmetrics.averageWidth #altura de una x
+      self._fsize=fsize
+      self._internalLeading=fmetrics.internalLeading # espacio extra superior
+      self._externalLeading=fmetrics.externalLeading # espacio entre lineas
+      return
+    
     self._ascent=0 #Altura sobre la linea base
     self._descent=0 #altura bajo la linea base
     self._averageWidth=0 #altura de una x
@@ -440,16 +459,21 @@ class SqrtBox(Box):
     self._fsize=fsize
     self._interlineado=round(self._fsize/4)
     fmetrics= dc.GetFontMetrics()
+    hx=fmetrics.averageWidth
     #v=[fmetrics.ascent, fmetrics.descent, fmetrics.height, fmetrics.averageWidth]
-    box=self.d[0]
+    box = self.d[0]
+    widthIndex = hx
     if len(self.d)==2:
       self.d[0].fontSizeLvl=self.fontSizeLvl+2
       self.d[0].fontNormalSize=self.fontNormalSize
+      self.d[0].FindSize(dc)
+      widthIndex=self.d[0].width*1.7
       box=self.d[1]
       
     box.fontSizeLvl=self.fontSizeLvl
     box.fontNormalSize=self.fontNormalSize
-    box.x=fmetrics.averageWidth+self._interlineado
+    
+    box.x=widthIndex+self._interlineado
     
     box.FindSize(dc)
     if box.height/fmetrics.height > 2:
@@ -459,14 +483,14 @@ class SqrtBox(Box):
     self.width=box.x+box.width+self._interlineado
     
     box._printBoxMetrics(head=True)
-    hx=fmetrics.averageWidth
+    
     h=box.height+self._interlineado
     p1y=box._ascent-round(hx/2)
     p1x=0
     p2y=h
-    p2x=round(hx/2)
+    p2x=round(widthIndex/2)
     p3y=self._interlineado
-    p3x=hx
+    p3x=widthIndex
     p4y=p3y
     p4x=self.width-self._interlineado
     #Calcula el trazo para la raiz
@@ -480,6 +504,11 @@ class SqrtBox(Box):
     self._internalLeading=fmetrics.internalLeading # espacio extra superior
     self._externalLeading=fmetrics.externalLeading # espacio entre lineas
     self.height=self._ascent+self._descent
+    
+    if len(self.d)==2:
+      # Calcula la posición del indice
+      self.d[0].y=p1y-self.d[0].height
+      self.d[0].x=(p3x-self.d[0].width)/3
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def DrawBox(self, dc):
     '''

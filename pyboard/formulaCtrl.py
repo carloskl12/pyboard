@@ -364,11 +364,8 @@ class FormulaCtrl(wx.Bitmap):
     n= len(self.operators)
     op='s'
     if n > 1:
-      #if self.operators[-1] == '^':
-#        if self.operators[-2]=='^':
-#          op='^'
-#        elif self.operators[-2]=='_':
-#          op= self.operators[-3]
-#        else:
       op=self.operators[-1]
     return op
+
+
+
