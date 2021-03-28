@@ -487,7 +487,7 @@ class SqrtBox(Box):
     '''
     #Dibuja la raíz
     lineWidth=round(self._fsize/8)
-    pen=wx.Pen(self.root.fcolour, lineWidth, wx.PENSTYLE_CROSS_HATCH )
+    pen=wx.Pen(self.root.fcolour, lineWidth, wx.PENSTYLE_SOLID )
     dc.SetPen(pen)
     gx,gy=self.gPos
     for i in range(len(self._points)-1):

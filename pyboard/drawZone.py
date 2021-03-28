@@ -434,8 +434,9 @@ class DrawZone(wx.Control):
       self._isDrawing=True
       dc.SelectObject(self._bmpDrawCache)
       
-      normalPen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_CROSS_HATCH )
-      eraserPen=wx.Pen(self._bgBoardColour, self._eraserWidth, wx.PENSTYLE_CROSS_HATCH )
+      normalPen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_SOLID )
+      eraserPen=wx.Pen(self._bgBoardColour, self._eraserWidth, wx.PENSTYLE_SOLID )
+      dc = wx.GCDC(dc)
       if left and not right:
         rightV=0 
         if self._toolDraw == TOOL_GOMA:
@@ -456,11 +457,7 @@ class DrawZone(wx.Control):
               dc.DrawLine(p,p)
           else:
             dc.DrawLine(self._lastPoint,p)
-        #elif self._toolDraw == TOOL_CIRCULO:
-        #  self._figure.Draw(dc)
-        #print( '  pos:',p)
-        # Se guarda el último punto cuando se arrastra para 
-        # algunas herramientas que utilizan el trazo continuo
+        
         if esTrazoContinuo:
           self._lastPoint=p
         self.DoPaint()
@@ -563,6 +560,7 @@ class DrawZone(wx.Control):
       return
     lastTool=self._toolDraw
     lastColour=self.drawColour
+    lastPenWidth=self._penWidth
     if keyCode == ord('f'):#Finaliza una linea se usa para modo poligono
       self._lastPoint=None
       if self._figure != None:
@@ -681,7 +679,7 @@ class DrawZone(wx.Control):
       self.DropFigure()
       self.DropSelection()
 
-    if lastColour != self.drawColour:
+    if lastColour != self.drawColour or lastPenWidth != self._penWidth:
       self.DoPaint()
     
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -743,10 +741,12 @@ class DrawZone(wx.Control):
       if not self._isDrawing:
         self.SaveLastAction(dc)
       dc.SelectObject(self._bmpDrawCache)
+      dc = wx.GCDC(dc)
+      
       if self._toolDraw ==TOOL_GOMA:
-        dc.SetPen(wx.Pen(self._bgBoardColour,self._eraserWidth, wx.PENSTYLE_CROSS_HATCH ) )
+        dc.SetPen(wx.Pen(self._bgBoardColour,self._eraserWidth, wx.PENSTYLE_SOLID ) )
       else:
-        dc.SetPen(wx.Pen(self._drawColour,self._penWidth, wx.PENSTYLE_CROSS_HATCH ) )
+        dc.SetPen(wx.Pen(self._drawColour,self._penWidth, wx.PENSTYLE_SOLID ) )
       
       if self._toolDraw in ( TOOL_GOMA , TOOL_LAPIZ, TOOL_POLIGONO):
         if self._lastPoint == None:
@@ -785,10 +785,11 @@ class DrawZone(wx.Control):
       if not self._isDrawing:
         self.SaveLastAction(dc)
       dc.SelectObject(self._bmpDrawCache)
+      dc = wx.GCDC(dc)
       if self._toolDraw !=TOOL_GOMA:
-        dc.SetPen(wx.Pen(self._bgBoardColour,self._eraserWidth, wx.PENSTYLE_CROSS_HATCH ) )
+        dc.SetPen(wx.Pen(self._bgBoardColour,self._eraserWidth, wx.wx.PENSTYLE_SOLID ) )
       else:
-        dc.SetPen(wx.Pen(self._drawColour,self._penWidth, wx.PENSTYLE_CROSS_HATCH ) )
+        dc.SetPen(wx.Pen(self._drawColour,self._penWidth, wx.wx.PENSTYLE_SOLID ) )
       if self._lastPoint == None:
         pos2=(pos.x+1,pos.y)
         dc.DrawLine(pos,pos2)
@@ -873,9 +874,11 @@ class DrawZone(wx.Control):
     dc = wx.MemoryDC()
     self.SaveLastAction(dc)
     dc.SelectObject(self._bmpDrawCache)
-    normalPen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_CROSS_HATCH )
+    pen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_SOLID )
+    dc = wx.GCDC(dc)
     dc.SetBrush(wx.TRANSPARENT_BRUSH)
-    dc.SetPen(normalPen)
+    dc.SetPen(pen)
+    
     self._figure.Draw(dc)
     if not duplicate:
       self._figure=None
@@ -970,9 +973,11 @@ class DrawZone(wx.Control):
       self._selection.Draw(dc)
     if self._imodo == MODO_DIBUJO:
         if self._figure !=None:
-          normalPen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_CROSS_HATCH )
+          pen=wx.Pen(self._drawColour, self._penWidth, wx.PENSTYLE_SOLID )
+          # Define un DC que permite el suavizado
+          dc = wx.GCDC(dc)
           dc.SetBrush(wx.TRANSPARENT_BRUSH)
-          dc.SetPen(normalPen)
+          dc.SetPen(pen)
           self._figure.Draw(dc)
     #print(' Redibujado')
   

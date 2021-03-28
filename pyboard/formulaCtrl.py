@@ -67,6 +67,7 @@ class FormulaCtrl(wx.Bitmap):
     
     dc = wx.MemoryDC()
     dc.SelectObject(self)
+    dc = wx.GCDC(dc)
     ancho, alto = self.GetSize()
     dc.SetBackground(wx.Brush(self.bcolour))
     if clearBmp:

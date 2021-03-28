@@ -78,3 +78,7 @@ class Figure(object):
       dc.DrawRectangle(x,y,self.width,self.height)
     else:
       raise Exception('Error: el tipo no es correcto')
+
+
+
+
