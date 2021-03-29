@@ -115,7 +115,6 @@ class DrawZone(wx.Control):
     self.Bind(wx.EVT_PAINT, self.OnPaint)
     self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground) 
     
-    self.Bind(wx.EVT_SIZE, self.OnSize)
     
     self.Bind(wx.EVT_KEY_UP, self.OnCommand)
     self.Bind(wx.EVT_CHAR, self.OnChar)
@@ -716,25 +715,6 @@ class DrawZone(wx.Control):
   def Cmdx(self, s=''): 
     
     self._sbtxCmd.SetLabel(s)
-  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  def OnSize(self,e):
-    ancho, alto= self.GetSize()
-    w,h= self._bmpDrawCache.GetSize()
-    #Actualiza el tamaño de la cache si es más pequeña que el redimensionado
-    if ancho>w or alto>h:
-      _bmpDrawCache=wx.Bitmap(ancho,alto)
-      dc = wx.MemoryDC()
-      dc.SelectObject(_bmpDrawCache)
-      dc.SetBackground(wx.Brush(self._bgBoardColour))
-      dc.Clear()
-      #Centra lo que ya existe
-      xnew=(ancho-w)//2
-      ynew=(alto-h)//2
-      dc.DrawBitmap(self._bmpDrawCache, xnew,ynew)
-      self._bmpDrawCache=_bmpDrawCache
-    
-    self.sb.SetSize(ancho,self.sbHeight)
-    self.sb.SetPosition((0,alto-self.sbHeight))
     
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def OnLeftClic(self,e):

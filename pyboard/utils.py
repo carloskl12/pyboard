@@ -159,8 +159,8 @@ class Slides(object):
       #Borra lo que hay actualmente
       dc = wx.MemoryDC()
       dc.SelectObject(self._bmpDraw)
-      ancho, alto = self._bmpDraw.GetSize()
-      alto=alto-self.sbHeight
+      #ancho, alto = self._bmpDraw.GetSize()
+      #alto=alto-self.sbHeight
       dc.SetBackground(wx.Brush(self._bgBoardColour))
       dc.Clear()
     return self._islide
@@ -205,7 +205,7 @@ class Slides(object):
       self.DrawFile(fname)
       return True
     else:
-      print('  no sepudo dibujar', len(self._slides))
+      print('  no se pudo dibujar', len(self._slides))
       return False
     return self._islide
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

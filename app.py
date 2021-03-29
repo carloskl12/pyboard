@@ -18,14 +18,15 @@ class MainFrame(wx.Frame):
            'chalkboard':'./resource/chalkboard' #donde se guardan los resultados
            }
     # Create a panel and notebook (tabs holder)
-    p = DrawZone(self,minSize)
+    sizeDrawArea=( minSize[0],minSize[1]-alturaEncabezado)
+    p = DrawZone(self, sizeDrawArea )
     p.SetBackgroundColour('#e2f99f')
     self.p=p
     self.SetMinSize(minSize)
     self.SetMaxSize(minSize)
     self.Centre()
     #self.sb = self.CreateStatusBar()
-    self.Msg('Size:'+str(p.GetSize()))
+    self.Msg('Size of drawZone:'+str(p.GetSize()))
 
     self.SetupDirs()
     
