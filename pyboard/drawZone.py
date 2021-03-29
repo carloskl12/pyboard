@@ -325,6 +325,7 @@ class DrawZone(wx.Control):
         self.Msg(' anterior (a) -- %i'%(slideIndex+1))
         # Para no colapsar con imágenes del anterior slide
         self._undoActive=False
+        self._initIndicator=False
         self.DoPaint()
     elif keyCode == ord('S'):
       if self._slidesOn:
@@ -332,6 +333,7 @@ class DrawZone(wx.Control):
         slideIndex=self._slides.Next()
         self.Msg(' siguiente (s) -- %i'%(slideIndex+1))
         self._undoActive=False
+        self._initIndicator=False
         self.DoPaint()
       else:
         dlg=wx.MessageDialog(self.parent,"¿Desea activar el modo presentación?", style=wx.YES_NO)
@@ -340,10 +342,13 @@ class DrawZone(wx.Control):
           self._slides=Slides(self.dirs['chalkboard'], self._bmpDrawCache, 
             self._bgBoardColour, self.sbHeight)
           self._slidesOn=True
+          
           print('  **Slides activados')
         else:
           pass
         dlg.Destroy()
+        self._initIndicator=False
+        self.DoPaint()
     elif keyCode == ord('P'):#activa presentación
       fname, dirname= self.GetDir(self.dirs['slides'])
       basename=os.path.basename(os.path.normpath(dirname))
@@ -353,6 +358,7 @@ class DrawZone(wx.Control):
       self._slides=Slides(self.dirs['chalkboard'], self._bmpDrawCache, 
             self._bgBoardColour, self.sbHeight, name=basename,dirslidesBg=dirname)
       self._slidesOn=True
+      self._initIndicator=False
       self.DoPaint()
     elif keyCode == ord('R'):#Refresca slide de fondo
       if self._slidesOn:
