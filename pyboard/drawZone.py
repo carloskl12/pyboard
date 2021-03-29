@@ -85,9 +85,10 @@ class DrawZone(wx.Control):
     self.sbHeight=24
     self.sb= wx.Control(self,size=(ancho,self.sbHeight),
       pos=wx.Point(0,alto-self.sbHeight),style=wx.BORDER_NONE)
-    self._sbtxModo=wx.StaticText(self.sb, label='Modo: %s'%self.modo, pos=(10,2))
-    self._sbtxCmd=LineCMD(self.sb, layout='| >> ', pos=(160,2), width=390)
-    self._sbtxInfo=wx.StaticText(self.sb, label='| Msg: ', pos=(560,2))
+    self._sbtxModo=wx.StaticText(self.sb, label='Modo: %s'%self.modo, pos=(44,2))
+    self._sbtxCmd=LineCMD(self.sb, layout='| >> ', pos=(190,2), width=490)
+    self._sbtxInfo=wx.StaticText(self.sb, label='| Msg: ', pos=(690,2))
+    self._initIndicator=False # Para mostrar el color
 
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     # memoria de dibujo para evitar flicker
@@ -137,6 +138,32 @@ class DrawZone(wx.Control):
     self.formula.fcolour=c
     self._drawTxt.SetForegroundColour(c)
 
+  #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  def ShowColourInSB(self):
+    '''
+    Dibuja un círculo con el color actual en la barra de estado
+    '''
+    if self._previusDrawColour == self._drawColour and self._initIndicator:
+      return
+    
+    self._previusDrawColour = self._drawColour
+    ancho, alto = self.sb.GetSize()
+    dc = wx.PaintDC(self.sb)
+    pen=wx.Pen("#aaaaaa", 1, wx.PENSTYLE_SOLID )
+    # Define un DC que permite el suavizado
+    dc = wx.GCDC(dc)
+    
+    dc.SetPen(wx.Pen("#aaaaaa", 1, wx.PENSTYLE_TRANSPARENT ))
+    dc.SetBrush(wx.Brush( self.sb.GetBackgroundColour() ) )
+    #dc.DrawRectangle(ancho-alto*1.5,0,alto+4,alto)
+    dc.DrawRectangle(0,0,alto,alto)
+    dc.SetBrush(wx.Brush( self._drawColour ) )
+    dc.SetPen(pen)
+    #dc.DrawCircle(ancho-alto,alto/2,(alto-8)/2)
+    
+    dc.DrawCircle(alto/2,alto/2,(alto-8)/2)
+
+
   def SetFont(self, font):
     '''
     Ajusta la fuente de la zona de dibujo, esta es diferente a la de la 
@@ -171,7 +198,8 @@ class DrawZone(wx.Control):
     estilo=self._ESTILOS[style]
     self._bgBoardColour=estilo['bgBoardColour'] #Fondo de la pizarra
     self._drawColour=estilo['drawColour'] #Color para dibujar
-    
+    #Utilizado para actualizar el indicador de color
+    self._previusDrawColour="#ffaabc"
     if hasattr(self,'formula'):
       #print('  ** si cambia color de fórmula', self._bgBoardColour)
       self.formula.bcolour=self._bgBoardColour
@@ -483,6 +511,7 @@ class DrawZone(wx.Control):
   def OnChar(self,e):
     keyCode= e.GetKeyCode()
     unicodeKey=e.GetUnicodeKey()
+    self._initIndicator=True
     if self._imodo == 1:
       self.ModeText(keyCode,unicodeKey)
     elif self._imodo == 3:
@@ -953,6 +982,7 @@ class DrawZone(wx.Control):
 
     dc.DrawBitmap(self._bmpDrawCache, 0,0)
     x,y=self.formula.GetPosition()
+    self.ShowColourInSB()
     if self._imodo == MODO_FORMULA:
       dc.DrawBitmap(self.formula.bitmap,x,y,1) #el uno indica para usar máscara
     if self._selection !=None:
@@ -1015,9 +1045,11 @@ class DrawZone(wx.Control):
       self.DoPaint()
     else:
       # Primera vez que se dibuja
-      self._startedControl=True
+      
       #self.DrawBitmaps()
       self.DoPaint()
+      self.ShowColourInSB()
+      self._startedControl=True
       #print('Se ha dibujado', type(self))
 
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
