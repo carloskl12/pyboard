@@ -8,8 +8,8 @@ class MainFrame(wx.Frame):
     
     # youtube 1280x720 720p
     #minSize=(854,480) #youtube 480p
-    
-    minSize=(1024,576) # Formato 16/9 unidad a 64
+    alturaEncabezado=38
+    minSize=(1024,576+alturaEncabezado) # Formato 16/9 unidad a 64
     wx.Frame.__init__(self, None, size=minSize, title="Pyboard")
     
     self.dirs={'tmp':'./resource/tmp',
