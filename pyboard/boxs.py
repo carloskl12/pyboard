@@ -563,7 +563,8 @@ class IntBox(Box):
   '''
   def __init__(self,root, parent, **kwargs):
     super(IntBox,self).__init__(root,parent,**kwargs)
-    print(self.parent)
+    self._s="∫"
+    #print(self.parent)
     #self.parent.endAppend()
   
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -571,7 +572,7 @@ class IntBox(Box):
     '''
     Calcula el ancho y alto de la caja
     '''
-    s='∫'
+    s=self._s
     fontSizeLvl=self.fontSizeLvl-2 #para que sea más grande
     font, fsize= self.GetFont(fontSizeLvl)
     dc.SetFont(font)
@@ -602,7 +603,7 @@ class IntBox(Box):
     '''
     Dibuja la caja
     '''
-    s='∫'
+    s=self._s
     fontSizeLvl=self.fontSizeLvl-2 #para que sea más grande
     font, fsize= self.GetFont(fontSizeLvl)
     dc.SetFont(font)
@@ -611,6 +612,33 @@ class IntBox(Box):
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def DepureTree(self):
     self.stage=-1 #finaliza
+    
+
+class IintBox(IntBox):
+  '''
+  Integral doble
+  '''
+  def __init__(self,root, parent, **kwargs):
+    super(IintBox,self).__init__(root,parent,**kwargs)
+    self._s="∬"
+
+class OintBox(IntBox):
+  '''
+  Integral de contorno
+  '''
+  def __init__(self,root, parent, **kwargs):
+    super(OintBox,self).__init__(root,parent,**kwargs)
+    self._s="∮"
+
+class SumBox(IntBox):
+  '''
+  Clase para encapsular el símbolo de sumatoria
+  '''
+  def __init__(self,root, parent, **kwargs):
+    super(SumBox,self).__init__(root,parent,**kwargs)
+    self._s="∑"
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class ArgBox(Box):
@@ -1086,7 +1114,8 @@ class SubBox(InfixBox):
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Grupos de unidades según los comandos de escape
-PREFIJOS={'\\sqrt': SqrtBox, '\\frac':FracBox,'\\int':IntBox}
+PREFIJOS={'\\sqrt': SqrtBox, '\\frac':FracBox,'\\int':IntBox,'\\iint':IintBox,
+        '\\oint':OintBox, '\\sum':SumBox}
 INFIJOS={'^': PowBox, '_':SubBox}
 
 
