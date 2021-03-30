@@ -82,6 +82,10 @@ Existen acciones particulares en este modo:
     herramienta selección permite copiar el área que se ha seleccionado. 
   * eliminar (e): elimina toda el área de trabajo, y con la herramienta selección
     elimina la región seleccionada.
+  * centrar (0): con el número cero se puede centrar una figura flotante o una
+    selección flotante a una posición múltplo de 64.
+  * alinear (9): con el número 9 se puede alinear la posición de una figura 
+    flotante o una selección flotante a una posición múltplo de 64
 
 Las herramientas de dibujo disponibles son:
   * lápiz (l): permite realizar trazos libres.
@@ -112,8 +116,10 @@ acción en particular. Los textos y fórmulas se hallan en estado flotante linea
 a linea, por lo tanto, cuando se digita ENTER se inserta la linea en el área 
 de trabajo, en caso contrario la linea está flotante y se puede reposicionar 
 clicando en cualquier lugar. De forma similar al texto, funcionan las 
-fórmulas. En el modo dibujo se tienen las circunferencias y cuadrados o 
-rectángulos como elementos flotantes.
+fórmulas. En el modo dibujo se tienen las circunferencias, cuadrados o 
+rectángulos y áreas recortadas como elementos flotantes, en este caso particular
+los elementos flotantes se pueden mover utilizando las flechas, así como 
+tambien se pueden alinear.
 
 ### Deshacer la última acción
 Es posible deshacer la última acción que cambie el área de trabajo utilizando CTRL+Z,

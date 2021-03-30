@@ -34,9 +34,12 @@ CHAR_EQ={
 'theta':'θ',
 'lambda':'λ',
 'pi': 'π',
+'sigma':'σ',
 'omega':'ω',
 'integra':'∫',
 'partial':'∂',
 'suma':'∑',
+'Sigma':'∑',
 'infty':'∞',
+'to':'→',
 }

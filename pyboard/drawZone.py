@@ -18,7 +18,7 @@ TOOL_POLIGONO=1
 TOOL_GOMA=2
 TOOL_CIRCULO=3
 TOOL_CUADRADO=4
-TOOL_SELEC=5
+TOOL_SELECT=5
 class DrawZone(wx.Control):
   """
   se espera que exista:
@@ -35,7 +35,7 @@ class DrawZone(wx.Control):
   
   _tools={TOOL_LAPIZ:'lápiz (l)', TOOL_POLIGONO:'polígono (p)',
           TOOL_GOMA:'goma (g)', TOOL_CIRCULO:'círculo (c)',
-          TOOL_CUADRADO:'cuadrado (C)',TOOL_SELEC:'selección (S)'}
+          TOOL_CUADRADO:'cuadrado (C)',TOOL_SELECT:'selección (S)'}
   
   _ESTILOS={1:{'bgBoardColour': '#113700',
                'drawColour': '#ffffff',
@@ -301,8 +301,10 @@ class DrawZone(wx.Control):
           self.DropFigure()
           self.formula.SetPosition((x,y-10))
           self.SetMode('f')
+          if not self._selectionBmp:
+            self._selection = None
           self.Msg('Modo fórmula activado')
-          #self.DoPaint()
+          self.DoPaint()
       return
     
       
@@ -317,7 +319,7 @@ class DrawZone(wx.Control):
       self.SetMode('d')
       self.Bind(wx.EVT_MOTION, self.OnDrawing)
       self._isDrawing=False
-    elif keyCode == ord('A'):
+    elif keyCode == ord('A') or keyCode == 314:
       if self._slidesOn:
         #self.SetSlide(self._islide-1)
         slideIndex=self._slides.Previus()
@@ -326,7 +328,7 @@ class DrawZone(wx.Control):
         self._undoActive=False
         self._initIndicator=False
         self.DoPaint()
-    elif keyCode == ord('S'):
+    elif keyCode == ord('S') or keyCode == 316:
       if self._slidesOn:
         #self.SetSlide(self._islide+1)
         slideIndex=self._slides.Next()
@@ -434,7 +436,7 @@ class DrawZone(wx.Control):
         elif self._toolDraw == TOOL_CUADRADO: 
           self._lastPoint=p
           self._figure=Figure('rectangle',p,1,1)
-        elif self._toolDraw == TOOL_SELEC:  
+        elif self._toolDraw == TOOL_SELECT:  
           self._lastPoint=p
           self.DropSelection()
           self._selection=Figure('rectangle',p,1,1)
@@ -450,16 +452,17 @@ class DrawZone(wx.Control):
           elif self._selection !=None:
             xi,yi=self._selection.posIni
             self._selection.pos=(xi+dx,yi+dy)
-        elif self._toolDraw == TOOL_CIRCULO:
-          xc,yc= self._lastPoint
-          x,y= p
-          self._figure.radius=round(math.sqrt((x-xc)**2+(y-yc)**2))
-        elif self._toolDraw == TOOL_CUADRADO:
+#        elif self._toolDraw == TOOL_CIRCULO:
+#          xc,yc= self._lastPoint
+#          x,y= p
+#          self._figure.radius=round(math.sqrt((x-xc)**2+(y-yc)**2))
+#          self._figure.pos=
+        elif self._toolDraw in (TOOL_CUADRADO, TOOL_CIRCULO):
           xc,yc= self._lastPoint
           x,y= p
           self._figure.width=x-xc
           self._figure.height=y-yc
-        elif self._toolDraw ==TOOL_SELEC:
+        elif self._toolDraw ==TOOL_SELECT:
           xc,yc= self._lastPoint
           x,y= p
           self._selection.width=x-xc
@@ -557,6 +560,8 @@ class DrawZone(wx.Control):
       # Escape
       self.DropFormula()
       self.SetMode(0)
+      self.DropSelection()
+      self._lastPoint=None
       self.DoPaint()
       return
     if unicodeKey == 13:
@@ -583,10 +588,15 @@ class DrawZone(wx.Control):
       self.DropFigure()
       self.DropSelection()
       self._lastPoint=None
+      self.DoPaint()
       return
     lastTool=self._toolDraw
     lastColour=self.drawColour
     lastPenWidth=self._penWidth
+    updateDraw=True
+    # Herramientas que generan figuras flotantes
+    dicTool = {TOOL_SELECT:self._selection, TOOL_CIRCULO:self._figure, TOOL_CUADRADO:self._figure}
+    
     if keyCode == ord('f'):#Finaliza una linea se usa para modo poligono
       self._lastPoint=None
       if self._figure != None:
@@ -618,7 +628,7 @@ class DrawZone(wx.Control):
       self.Msg('poligono activado (p)')
     elif keyCode == ord('e'):#Activa modo polígono
       #self._toolDraw=1
-      if self._toolDraw != TOOL_SELEC:
+      if self._toolDraw != TOOL_SELECT:
         self.Erase()
         self.Msg('eliminar todo (e)')
       else:
@@ -640,7 +650,7 @@ class DrawZone(wx.Control):
       self._lastPoint=None
       self.Msg('Cuadrado activado (C)')
     elif keyCode == ord('S'):
-      self._toolDraw=TOOL_SELEC
+      self._toolDraw=TOOL_SELECT
       self._lastPoint=None
       self.Msg('Selección activa (S)')
     elif keyCode == ord('s'):#aumenta ancho de trazo
@@ -661,6 +671,64 @@ class DrawZone(wx.Control):
         if self._eraserWidth>1:
           self._eraserWidth-=1
           self.Msg('anterior (a) -- goma %i'%self._eraserWidth)
+
+    elif keyCode == ord("9"): #Alineado segun la posición
+      
+      if self._toolDraw in dicTool:
+        element=dicTool[self._toolDraw]
+        if element != None:
+          x,y=element.pos
+          maxW,maxH= self.GetSize()
+          maxH-=self.sbHeight
+          x=(x//64)*64
+          y=(y//64)*64
+          element.pos=(x,y)
+          element.posIni=(x,y)
+          self.Msg("Alineado a (%i,%i)"%(x,y))
+          updateDraw=True
+    elif keyCode == ord("0"): #Alineado según el centro
+      if self._toolDraw in dicTool:
+        element=dicTool[self._toolDraw]
+        if element != None:
+          x,y=element.pos
+          maxW,maxH= self.GetSize()
+          maxH-=self.sbHeight
+          x+=element.width//2
+          y+=element.height//2
+          x0=(x//64)*64
+          y0=(y//64)*64
+          x=x0 - element.width//2
+          y=y0 - element.height//2
+          if x < 0:
+            x=0
+            x0=element.width//2
+          if y < 0:
+            y=0
+            y0=element.height//2
+          element.pos=(x, y)
+          element.posIni=(x,y)
+          self.Msg("Centrado en (%i,%i)"%(x0, y0))
+          updateDraw=True
+    elif keyCode in (315,317,314,316): 
+      # arriba,abajo, izquierda, derecha
+      if self._toolDraw in dicTool:
+        element=dicTool[self._toolDraw]
+        dicInc={315: (0 ,-1 ),317:(0,1 ),314:(-1, 0 ),316: (1, 0) }
+        dx,dy = dicInc[keyCode]
+        if element != None:
+          x,y=element.pos
+          x+=dx
+          y+=dy
+          maxW,maxH= self.GetSize()
+          maxH-=self.sbHeight
+          if x<0 or x>= maxW:
+            x-=dx
+          if y<0 or y >= maxH:
+            y-=dy
+          element.pos=(x,y)
+          element.posIni=(x,y)
+          updateDraw=True
+          self.Msg("Desplazado a (%i,%i)"%(x, y))
     elif keyCode == ord('b'):
       self.drawColour='#ffffff'
       self.Msg('color blanco (b)')
@@ -705,7 +773,7 @@ class DrawZone(wx.Control):
       self.DropFigure()
       self.DropSelection()
 
-    if lastColour != self.drawColour or lastPenWidth != self._penWidth:
+    if lastColour != self.drawColour or lastPenWidth != self._penWidth or updateDraw:
       self.DoPaint()
     
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -975,7 +1043,11 @@ class DrawZone(wx.Control):
       if self._selectionBmp !=None:
         x,y=self._selection.pos
         dc.DrawBitmap(self._selectionBmp,x,y,1)
-      normalPen=wx.Pen(self._drawColour, 1, wx.PENSTYLE_DOT_DASH )
+      estilo = wx.PENSTYLE_DOT_DASH
+      if self._selectionBmp:
+        estilo = wx.PENSTYLE_SHORT_DASH
+      normalPen=wx.Pen(self._drawColour, 1, estilo )
+
       dc.SetBrush(wx.TRANSPARENT_BRUSH)
       dc.SetPen(normalPen)
       self._selection.Draw(dc)

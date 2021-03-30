@@ -11,8 +11,10 @@ class Figure(object):
     self._tipo=tipo
     self.pos=pos
     self.posIni=pos
-    self.height=height
-    self.width=width
+    self._height=height
+    self._width=width
+    if tipo == 'circle':
+      self._height=width*2
     if len(pos)!=2:
       raise Exception('Error: posición no válida')
     if not tipo in ('circle','rectangle'):
@@ -22,6 +24,22 @@ class Figure(object):
     return self._tipo
 
   @property
+  def width(self):
+    return self._width
+  @width.setter
+  def width(self,value):
+    self._width = value
+      
+  @property
+  def height(self):
+    if self.tipo == 'circle':
+      return self._width
+    return self._height
+  
+  @height.setter
+  def height(self,value):
+    self._height = value
+  @property
   def rect(self):
     if self.tipo=='rectangle':
       x,y=self.pos
@@ -30,13 +48,13 @@ class Figure(object):
   @property
   def radius(self):
     if self.tipo == 'circle':
-      return self.width
+      return self._width/2
     raise Exception('Error: La figura no tiene radio')
   
   @radius.setter
   def radius(self, value):
     if self.tipo == 'circle':
-      self.width=value
+      self._width=value*2
     else:
       raise Exception('Error: La figura no tiene radio')
 
@@ -47,6 +65,8 @@ class Figure(object):
     '''
     if self.tipo=='circle':
       xc,yc=self.pos
+      xc+=self.radius
+      yc+=self.radius
       x,y= pos
       rt= round(math.sqrt((x-xc)**2+(y-yc)**2))
       return rt <= self.radius
@@ -73,7 +93,7 @@ class Figure(object):
     '''
     x,y=self.pos
     if self.tipo == 'circle':
-      dc.DrawCircle(x,y,self.width)
+      dc.DrawCircle(x+self.radius,y+self.radius,self.radius)
     elif self.tipo == 'rectangle':
       dc.DrawRectangle(x,y,self.width,self.height)
     else:
