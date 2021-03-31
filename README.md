@@ -1,6 +1,8 @@
 # pyboard
 Tablero para escribir texto, fórmulas matemáticas y algunas figuras geométricas.
-![pyboar](https://github.com/carloskl12/pyboard/blob/master/pyboard.png)
+![pyboard](https://github.com/carloskl12/pyboard/blob/master/pyboard.png)
+
+[![pyboard](http://img.youtube.com/vi/Ox3RHDHaz0o/0.jpg)](https://www.youtube.com/watch?v=Ox3RHDHaz0o "Pyboard")
 
 ### Contenido
 **[Requisitos](#requisitos)**<br>
