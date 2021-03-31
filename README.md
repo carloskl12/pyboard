@@ -86,6 +86,8 @@ Existen acciones particulares en este modo:
     selección flotante a una posición múltplo de 64.
   * alinear (9): con el número 9 se puede alinear la posición de una figura 
     flotante o una selección flotante a una posición múltplo de 64
+  * aumentar (q) y disminuir (w): cuando se tiene una figura flotante se 
+    puede aumentar y disminuir su tamaño
 
 Las herramientas de dibujo disponibles son:
   * lápiz (l): permite realizar trazos libres.
@@ -119,7 +121,7 @@ clicando en cualquier lugar. De forma similar al texto, funcionan las
 fórmulas. En el modo dibujo se tienen las circunferencias, cuadrados o 
 rectángulos y áreas recortadas como elementos flotantes, en este caso particular
 los elementos flotantes se pueden mover utilizando las flechas, así como 
-tambien se pueden alinear.
+tambien se pueden alinear y cambiar de tamaño.
 
 ### Deshacer la última acción
 Es posible deshacer la última acción que cambie el área de trabajo utilizando CTRL+Z,

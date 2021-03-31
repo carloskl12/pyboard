@@ -653,25 +653,40 @@ class DrawZone(wx.Control):
       self._toolDraw=TOOL_SELECT
       self._lastPoint=None
       self.Msg('Selección activa (S)')
-    elif keyCode == ord('s'):#aumenta ancho de trazo
-      if self._toolDraw!=2:
-        if self._penWidth < self.MAX_PEN_WIDTH:
-          self._penWidth+=1
-          self.Msg('siguiente (s) -- ancho %i'%self._penWidth)
+    
+    
+    elif keyCode in (ord('q'), ord('w')):#disminuir aumentar
+      # Disminuye y amuenta el tamaño de una figura flotante
+      dicAction={ord('q'):(-1,'- (q)'), ord('w'):(1,'+ (w)')}
+      incValue = dicAction[keyCode][0]
+      if self._toolDraw in dicTool:
+        element=dicTool[self._toolDraw]
+        if self._selectionBmp != None:
+          w = self._selection.width+incValue
+          h = self._selection.height+incValue
+          if w>2 and h>2:
+            self.ScaleSelection(w,h)
+            updateDraw=True
+        else:
+          w = element.width+incValue
+          h = element.height+incValue
+          if w>2 and h>2:
+            element.width=w
+            element.height=h
+            self.Msg(" (width,height): (%i, %i)"%(w,h))
+            updateDraw=True
+    elif keyCode in (ord('s'), ord('a')):#anterior siguiente
+      dicAction={ord('s'):(1,'siguiente (s)'), ord('a'):(-1,'anterior (a)')}
+      incValue=dicAction[keyCode][0]
+      if self._toolDraw==2:
+        if 1<= self._eraserWidth+incValue <=self.MAX_PEN_WIDTH:
+          self._eraserWidth+=incValue
+          self.Msg('%s -- ancho %i'%(dicAction[keyCode][1],self._eraserWidth))
       else:
-        if self._eraserWidth<self.MAX_PEN_WIDTH:
-          self._eraserWidth+=1
-          self.Msg('siguiente (s) -- goma %i'%self._eraserWidth)
-    elif keyCode == ord('a'):#disminuye ancho de trazo
-      if self._toolDraw!=2:
-        if self._penWidth>1:
-          self._penWidth-=1
-          self.Msg('anterior (a) -- ancho %i'%self._penWidth)
-      else:
-        if self._eraserWidth>1:
-          self._eraserWidth-=1
-          self.Msg('anterior (a) -- goma %i'%self._eraserWidth)
-
+        if 1 <= self._penWidth + incValue <= self.MAX_PEN_WIDTH:
+          self._penWidth+=incValue
+          self.Msg('%s -- ancho %i'%(dicAction[keyCode][1],self._penWidth))
+        
     elif keyCode == ord("9"): #Alineado segun la posición
       
       if self._toolDraw in dicTool:
@@ -1025,6 +1040,26 @@ class DrawZone(wx.Control):
     self._selectionBmp=None
     self.DoPaint()
 
+  def ScaleSelection(self, w,h):
+    '''
+    Escala la selección a las dimensiones
+    '''
+    if self._selection == None:
+      return
+    if self._selectionBmp == None:
+      self._selection.width=w
+      self._selection.height=h
+      self.Msg('(width, height):(%i,%i)'%(w,h) )
+      return
+    # no redimensiona bien
+    
+    image = self._selectionBmp.ConvertToImage()
+    image.Rescale(w, h, wx.IMAGE_QUALITY_NEAREST)
+    self._selectionBmp = wx.Bitmap(image)
+    w,h= self._selectionBmp.GetSize()
+    self._selection.width=w
+    self._selection.height=h
+    self.Msg('(width, height):(%i,%i)'%(w,h) )
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def DoPaint(self):
     '''Realiza el redibujo usual luego de inicializado el control'''
