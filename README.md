@@ -1,6 +1,5 @@
 # pyboard
 Tablero para escribir texto, fórmulas matemáticas y algunas figuras geométricas.
-![pyboard](https://github.com/carloskl12/pyboard/blob/master/pyboard.png)
 
 [![pyboard](http://img.youtube.com/vi/Ox3RHDHaz0o/0.jpg)](https://www.youtube.com/watch?v=Ox3RHDHaz0o "Pyboard")
 
@@ -129,4 +128,10 @@ tambien se pueden alinear y cambiar de tamaño.
 Es posible deshacer la última acción que cambie el área de trabajo utilizando CTRL+Z,
 por lo cual los elementos flotantes no se pueden alterar al deshacer alguna 
 acción.
+
+### Tutorial de ayuda
+Se puede acceder al tutorial de ayuda utilizando (p) en modo global y abriendo
+la carpeta "help".
+
+![pyboard](https://github.com/carloskl12/pyboard/blob/master/pyboard.png)
 
