@@ -12,6 +12,12 @@ Tablero para escribir texto, fórmulas matemáticas y algunas figuras geométric
 La aplicación está desarrollada en python 3.7 sobre Linux, y requiere:
 * wxpython 4.04
 
+Para instalar un ambiente utilizando anaconda se puede crearlo de la 
+siguiente forma:
+
+			$ conda create -n tablero python=3.7 wxpython=4.0.4
+
+
 ## Objetivo de su desarrollo
 Esta aplicación fué desarrollada con el fin de presentar una herramienta
 para simular un tablero en el que se pueden hacer trazos libremente,
