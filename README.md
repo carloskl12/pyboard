@@ -30,6 +30,11 @@ desde terminal:
 
 			$ python app.py
 
+Para plataforma Mac se debe utilizar pythonw debido a que requiere utilizar 
+ventanas:
+
+			$ pythonw app.py
+
 El diseño de la interfaz es minimalista, carece de menus gráficos, su 
 gran mayoria de opciones se ajustan con atajos de teclado. En la barra de 
 estado se indica el modo, el texto que se introduce al modo respectivo, y las 
