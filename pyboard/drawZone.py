@@ -6,7 +6,7 @@ from .utils import getFileList, Slides
 from .figure import Figure
 from .lineCMD import LineCMD
 
-from .threadSocket import ThreadSocket
+#from .threadSocket import ThreadSocket
 
 MODO_COMANDO=0
 MODO_TEXTO=1
@@ -124,7 +124,7 @@ class DrawZone(wx.Control):
     
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     # Crea el socket en donde escuchará
-    self.threadSocket= None
+    #self.threadSocket= None
     #self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
 
 
@@ -369,15 +369,15 @@ class DrawZone(wx.Control):
       if self._slidesOn:
         self._slides.Instert()
         self.DoPaint()
-    elif keyCode == ord('L'):
-      if self.threadSocket == None:
-        self.threadSocket=  ThreadSocket(1,"socketCMD_pyboard",cbkfunction =self.cbkfunctionSocket)
-        self.Msg("Escuchando en el puerto %i."%self.threadSocket.port)
-        self.threadSocket.start()
-        #self.threadSocket.run()
-      else:
-        self.threadSocket.parar()
-        self.threadSocket = None
+#    elif keyCode == ord('L'):
+#      if self.threadSocket == None:
+#        self.threadSocket=  ThreadSocket(1,"socketCMD_pyboard",cbkfunction =self.cbkfunctionSocket)
+#        self.Msg("Escuchando en el puerto %i."%self.threadSocket.port)
+#        self.threadSocket.start()
+#        #self.threadSocket.run()
+#      else:
+#        self.threadSocket.parar()
+#        self.threadSocket = None
     elif keyCode == ord('1'):
       self.SetStyle(1)
       self.DoPaint()
