@@ -51,8 +51,8 @@ class MainFrame(wx.Frame):
   #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   def OnExit(self,e):
     self.p.Save()
-    if self.p.threadSocket != None:
-      self.p.threadSocket.parar()
+    #if self.p.threadSocket != None:
+    #  self.p.threadSocket.parar()
     print('**Cerrado correctamente')
     try:
       self.Destroy()
