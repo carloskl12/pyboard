@@ -30,7 +30,7 @@ desde terminal:
 
 			$ python app.py
 
-Para plataforma Mac se debe utilizar pythonw debido a que requiere utilizar 
+Para la plataforma Mac se debe utilizar pythonw debido a que requiere utilizar 
 ventanas:
 
 			$ pythonw app.py
